@@ -75,6 +75,10 @@ try:
     SWP_NOSIZE = 0x0001
     ctypes.windll.user32.SetWindowPos(hwnd, -1, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE)
 
+    # บังคับให้แสดงหน้าต่าง
+    SW_SHOWNOACTIVATE = 4
+    ctypes.windll.user32.ShowWindow(hwnd, SW_SHOWNOACTIVATE)
+
     print("Transparency enabled successfully!")
 except Exception as e:
     print(f"Warning: Could not set window transparency: {e}")
@@ -293,14 +297,18 @@ while running:
     # ย้ายหน้าต่างไปตามตำแหน่งตัวละคร (ทุก frame)
     try:
         hwnd = pygame.display.get_wm_info()['window']
-        # ใช้ MoveWindow แบบ repaint = False เพื่อความเร็ว
+
+        # ใช้ MoveWindow เพื่อความเร็วในการย้าย
         ctypes.windll.user32.MoveWindow(hwnd, window_pos[0], window_pos[1],
                                          CHARACTER_SIZE, CHARACTER_SIZE, False)
-        # รักษา topmost status
+
+        # บังคับให้อยู่บนสุดเสมอโดยไม่ activate
+        HWND_TOPMOST = -1
         SWP_NOMOVE = 0x0002
         SWP_NOSIZE = 0x0001
         SWP_NOACTIVATE = 0x0010
-        ctypes.windll.user32.SetWindowPos(hwnd, -1, 0, 0, 0, 0,
+
+        ctypes.windll.user32.SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0,
                                          SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE)
     except Exception as e:
         pass
